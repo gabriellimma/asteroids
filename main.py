@@ -49,6 +49,12 @@ def main():
         updatable.update(dt)
 
         for asteroid in asteroids:
+            for shot in shots:
+                if shot.colides_with(asteroid):
+                    log_event("asteroid_shot")
+                    shot.kill()
+                    asteroid.kill()
+
             if asteroid.colides_with(p1):
                 log_event("player_hit")
                 print("Game Over")
