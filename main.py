@@ -2,7 +2,6 @@ import sys
 import pygame
 from logger import log_state, log_event
 from constants import *
-
 from player import Player
 from player_two import PlayerTwo
 from asteroid import Asteroid
@@ -53,7 +52,7 @@ def main():
                 if shot.colides_with(asteroid):
                     log_event("asteroid_shot")
                     shot.kill()
-                    asteroid.kill()
+                    asteroid.split()
 
             if asteroid.colides_with(p1):
                 log_event("player_hit")
