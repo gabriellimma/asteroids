@@ -7,6 +7,7 @@ from player_two import PlayerTwo
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+from score import Score
 
 VERSION = pygame.version.ver
 
@@ -30,10 +31,12 @@ def main():
     Asteroid.containers = (updatable, drawables, asteroids)
     AsteroidField.containers = updatable
     Shot.containers = (shots, drawables, updatable)
+    
 
     p1 = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     af = AsteroidField()
-    #p2 = PlayerTwo(SCREEN_WIDTH / 2.2, SCREEN_HEIGHT / 2)
+    p2 = PlayerTwo(SCREEN_WIDTH / 2.2, SCREEN_HEIGHT / 2)
+    score = Score()
 
     while True:
         log_state()
@@ -53,11 +56,16 @@ def main():
                     log_event("asteroid_shot")
                     shot.kill()
                     asteroid.split()
+                    if shot.player == 1:
+                        score.increase_score(1, 100)
+                    if shot.player == 2:
+                        score.increase_score(2, 100)
 
-            if asteroid.colides_with(p1):
+            if asteroid.colides_with(p1) or asteroid.colides_with(p2):
                 log_event("player_hit")
                 print("Game Over")
                 sys.exit()
+        score.draw(screen)
         pygame.display.flip()
         dt = clock.tick(FPS) / 1000
 
