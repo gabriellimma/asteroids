@@ -8,19 +8,22 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from score import Score
+from menu import landing_page
 
 VERSION = pygame.version.ver
 
-
 def main():
     print(f"Starting Asteroids with pygame version: {VERSION}")
-    print(f"Screen width: {SCREEN_WIDTH}")
-    print(f"Screen height: {SCREEN_HEIGHT}")
 
     pygame.init()
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Asteroids")
     clock = pygame.time.Clock()
+
+    # Mostrar tela inicial
+    num_players = landing_page()
+
     dt = 0
     updatable = pygame.sprite.Group()
     drawables = pygame.sprite.Group()
@@ -31,11 +34,15 @@ def main():
     Asteroid.containers = (updatable, drawables, asteroids)
     AsteroidField.containers = updatable
     Shot.containers = (shots, drawables, updatable)
-    
 
     p1 = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    p2 = None
+
+    # Apenas criar Player 2 se selecionado
+    if num_players == 2:
+        p2 = PlayerTwo(SCREEN_WIDTH / 2.2, SCREEN_HEIGHT / 2)
+
     af = AsteroidField()
-    p2 = PlayerTwo(SCREEN_WIDTH / 2.2, SCREEN_HEIGHT / 2)
     score = Score()
 
     while True:
@@ -43,6 +50,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
+
         screen.fill("black")
 
         for drawable in drawables:
@@ -61,10 +69,16 @@ def main():
                     if shot.player == 2:
                         score.increase_score(2, 100)
 
-            if asteroid.colides_with(p1) or asteroid.colides_with(p2):
+            if asteroid.colides_with(p1):
                 log_event("player_hit")
-                print("Game Over")
+                print("Game Over - Player 1")
                 sys.exit()
+
+            if p2 and asteroid.colides_with(p2):
+                log_event("player_hit")
+                print("Game Over - Player 2")
+                sys.exit()
+
         score.draw(screen)
         pygame.display.flip()
         dt = clock.tick(FPS) / 1000
